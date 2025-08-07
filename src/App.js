@@ -1,7 +1,8 @@
+// ✅ Your imports
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ChatPage from "./chat"; // ✅ Correct import (make sure chat.js is in src/)
 
-// Animated background styles for login and match pages
 const loginPageStyle = {
   minHeight: '100vh',
   display: 'flex',
@@ -20,7 +21,6 @@ const matchPageStyle = {
   backgroundSize: '400% 400%',
 };
 
-// Keyframe animations
 const gradientAnimation = `
   @keyframes gradientLogin {
     0% {background-position: 0% 50%;}
@@ -47,8 +47,8 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [showMatchesPage, setShowMatchesPage] = useState(false);
+  const [showChatPage, setShowChatPage] = useState(false); // ✅ Chat state
 
-  // Inject global styles
   useEffect(() => {
     const styleTag = document.createElement('style');
     styleTag.innerHTML = gradientAnimation;
@@ -125,11 +125,10 @@ function App() {
 
     try {
       const res = await axios.post("https://skillswap-backend-3t10.onrender.com/", data, {
-      headers: {
+        headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
       setMatches(res.data);
     } catch (err) {
       console.error("Fetch match error:", err.response?.data || err.message);
@@ -137,7 +136,12 @@ function App() {
     }
   };
 
-  // Matches Page
+  // ✅ Show Chat Page
+  if (isLoggedIn && showChatPage) {
+    return <ChatPage currentUser={form} />;
+  }
+
+  // ✅ Matches Page
   if (isLoggedIn && showMatchesPage) {
     return (
       <div style={matchPageStyle}>
@@ -149,6 +153,9 @@ function App() {
             </button>
             <button onClick={handleMatch} style={{ padding: "10px 16px", backgroundColor: "#27ae60", color: "white", border: "none", borderRadius: 6 }}>
               Refresh Matches
+            </button>
+            <button onClick={() => setShowChatPage(true)} style={{ padding: "10px 16px", backgroundColor: "#8e44ad", color: "white", border: "none", borderRadius: 6 }}>
+              Open Chat 💬
             </button>
           </div>
 
@@ -194,7 +201,7 @@ function App() {
     );
   }
 
-  // Login/Register Page
+  // ✅ Login/Register Page
   return (
     <div style={loginPageStyle}>
       <div style={{ maxWidth: 500, margin: "auto", padding: 30, fontFamily: "Segoe UI", backgroundColor: "rgba(255,255,255,0.9)", borderRadius: 12 }}>
